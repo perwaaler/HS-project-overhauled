@@ -1,0 +1,56 @@
+% compare murmur pred. AUC for spingers and springer mod2 segmentation.
+load CVresults_netMurRegAllPos_valStop_SpringerSeg.mat
+CVresults_a = CVresults;
+load CVresults_netMurRegAllPos_valStop_overTrain.mat
+CVresults_b = CVresults;
+
+
+close all
+thr_grades = [1,2];
+n_row = numel(thr_grades);
+P_vals = zeros(n_row,4);
+AUC_diff = zeros(n_row,4);
+
+for i=1:n_row
+thr_grade = thr_grades(i);
+[P_a,All_a] = CV_SinglePosPred_performanceSummary(CVresults_a,...
+                                                     "AS",...
+                                                     thr_grade,...
+                                                     HSdata,...
+                                                     'plotROC1',false)
+[P_b,All_b] = CV_SinglePosPred_performanceSummary(CVresults_b,...
+                                                     "AS",...
+                                                     thr_grade,...
+                                                     HSdata,...
+                                                     'plotROC1',false)
+
+BS_table = bootstrap_perfMetric(All_a.activ{1}, All_a.target{1},...
+                                            'thr', -0.2,...
+                                            'N_sig',1,...
+                                            'scale_AUC',100)
+
+D = (P_b.murPred.eachAA.AS.(sprintf('g%g',thr_grade)).AUCmat - ...
+     P_a.murPred.eachAA.AS.(sprintf('g%g',thr_grade)).AUCmat)
+p = pValue(D);
+
+P_vals(thr_grade,:) = p;
+AUC_diff(thr_grade,:) = mean(D);
+
+end
+
+RowNames = cell(n_row,1);
+for i=1:n_row
+    RowNames{i} = sprintf('grade >= %g',thr_grades(i));
+end
+% RowNames = ["mur. grade >= 1","mur. grade >= 2","mur. grade >= 3"];
+ColNames = ["pval. p1","pval. p2","pval. p3","pval. p4"];
+
+T_pvals = array2table(round(P_vals,2),...
+            'v',ColNames,...
+            'r',RowNames)
+ColNames = ["AUC diff. p1","AUC diff. p2",...
+            "AUC diff. p3","AUC diff. p4"];
+T_diff = array2table(getPvalStars(P_vals,round(AUC_diff*100,1)),...
+            'v',ColNames,...
+            'r',RowNames)
+        
