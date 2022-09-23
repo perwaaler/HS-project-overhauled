@@ -34,7 +34,7 @@ balanceVal   = true;
 % folder to save each trained network in:
 save_net_folder = Paths.tempSaveNets;
 % *** segmentation extraction parameters ***
-N_cycleOverlap = 3;
+N_cycleOverlap = 2;
 N_cyclesPerSegmentDesired = 4;
 N_segmentsPerAudioDesired = 10;
 MFCC_sz = [13,200];
@@ -50,7 +50,7 @@ miniBatchSize = 2^5;
 MaxEpochs = 50;
 LearnRateDropFactor = 0.5;
 LearnRateDropPeriod = 5;
-initialLearnRate = 0.0005;
+initialLearnRate = 0.002;
 N_validation_stoppage = 10;
 checkValAccuracy = true;
 get_settings_only = false;

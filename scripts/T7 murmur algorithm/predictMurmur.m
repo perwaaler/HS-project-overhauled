@@ -1,4 +1,4 @@
-function [Y,A,Seg,fitInfo] = predictMurmur(X,fs0,net,varargin)
+function [Y,A,Seg,fitInfo,X_net] = predictMurmur(X,fs0,net,varargin)
 % takes a a set of four recordings (order: aortic, pulmonic, tricuspic,
 % mitral) and a trained neural network and outputs an array Y of murmur
 % grade prediction.
@@ -75,8 +75,9 @@ end
 % container for murmur predictions:
 Y = zeros(N_audio,1);
 
+A = cell(1,N_audio);
 for aa=1:N_audio
-
+    
     if noise_index(aa)==0
         % audio is annotated as clean - proceed to prediction:
         % *** compute MFCC input for each segment ***
@@ -90,14 +91,14 @@ for aa=1:N_audio
         N_segExtracted = numel(X_net);
 
         % container for activations for position aa:
-        A = zeros(N_segExtracted,1);
+        A{aa} = zeros(N_segExtracted,1);
         % make prediction on each segment:
         for k=1:N_segExtracted
-            A(k) = predict(net, X_net{k});
+            A{aa}(k) = predict(net, X_net{k});
         end
         
         % take median to get predictions
-        Y(aa) = median(A);
+        Y(aa) = median(A{aa});
 
     end
 end
