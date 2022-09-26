@@ -1,6 +1,8 @@
-
+R = ["CVresults_murRegAllPos_jointSegNonRandomSegExtraction",...
+    "CVresults_netMurRegAllPos_valStop_overTrain"];
 
 load CVresults_netMurRegAllPos_valStop_overTrain.mat
+
 targetType = 'AS';
 classThr = 2;
 [predPerf,S,All] = CV_VHDpred_performanceSummary(CVresults,targetType,classThr,HSdata)
