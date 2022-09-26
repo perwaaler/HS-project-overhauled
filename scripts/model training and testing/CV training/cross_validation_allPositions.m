@@ -12,6 +12,7 @@ targetType = "murmur"; % examples: "murmur", "ARgrade", "avmeanpg"...
 regression = true;
 getTrainData = true;
 trainNet = true;
+trainOnlyOnClean = true;
 % *** class thresholds ***
 % threshold that defines pathological class (used in classification):
 thr_pathology = 2;
@@ -58,6 +59,7 @@ get_settings_only = false;
 p = inputParser;
 addOptional(p,'getTrainData',getTrainData)
 addOptional(p,'trainNet',trainNet)
+addOptional(p,'trainOnlyOnClean',trainOnlyOnClean)
 addOptional(p,'preTrainedNetworks',preTrainedNetworks)
 addOptional(p,'targetType',targetType)
 addOptional(p,'balanceTrain',balanceTrain)
@@ -91,6 +93,7 @@ parse(p,varargin{:})
 
 getTrainData = p.Results.getTrainData;
 trainNet = p.Results.trainNet;
+trainOnlyOnClean = p.Results.trainOnlyOnClean;
 preTrainedNetworks = p.Results.preTrainedNetworks;
 targetType = p.Results.targetType;
 balanceTrain = p.Results.balanceTrain;
@@ -175,8 +178,13 @@ IvalRows   = CVpartitions.val.I{k};
 for aa=1:4
     
     disp(sprintf('aa = %g',aa))
-    % get index of clean recordings for position aa:
-    Iclean = HSdata.(sprintf('noise%g',aa))==0;
+    if trainOnlyOnClean
+        % get index of clean recordings for position aa:
+        Iclean = HSdata.(sprintf('noise%g',aa))==0;
+    else
+        Iclean = ones(height(HSdata),1);
+    end
+
     % get index for training and validation set observations of position aa:
     Itrain = and(ItrainRows,Iclean);
     Ival   = and(IvalRows,Iclean);
