@@ -1,8 +1,7 @@
 R = ["CVresults_murRegAllPos_jointSegNonRandomSegExtraction",...
     "CVresults_netMurRegAllPos_valStop_overTrain"];
 
-load CVresults_murRegAllPos_jointSegNonRandomSegExtraction.mat
-CVresults_b = CVresults;
+load CVresults_noise_murRegAllPos_jointSegNonRandomSegExtraction.mat
 
 targetType = 'AS';
 classThr = 2;

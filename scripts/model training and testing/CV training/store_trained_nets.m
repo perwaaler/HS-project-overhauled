@@ -8,25 +8,24 @@
 % describe the file:
 trainingDescription = {'Used joint segmentation (version whith min cycle duration)',...
     'set to 0.5s and fixed code for setting HR-peak integer-fraction search interval.',...
-    'Used new, non-stochastic method for extracting training segments, where'...
-    'extraction runs over the recording twice with 50% overlap and the second'...
-    'time the extraction is shifted one cycle to the right to ensure that all.'...
-    'segments are never completely identical.'};
+    'Used new, non-stochastic method for extracting training segments. Trained on'...
+    'all data, inlcuding noise annotated files.'};
 
 trainingDescription = stackStrings(trainingDescription);
 % navigate to folder with saved networks, and get directory with pwd command:
 tempStorageFolder = pwd;
 storageFolder = pwd;
 % name the file:
-fileName = 'networksCVnoNoiseDrOutMurRegAllPos_jointSegNonRandomSegExtraction.mat';
+fileName = 'networksCV_noise_DrOutMurRegAllPos_jointSegNonRandomSegExtraction.mat';
 % get training settings:
 train_settings = p.Results;
 
-%% save networks cell array:
-store_trainedNetsInArray(fileName,[],tempStorageFolder,...
-                        trainingDescription,train_settings)
-                   
+%% collect trained net files in cell array:
+networks = collectTrainedNetsInArray()
+%% save network array in current folder
+save('networksCV_noise_DrOutMurRegAllPos_jointSegNonRandomSegExtraction.mat',...
+    'networks','trainingDescription','train_settings')
 %% save CVresults in current folder
-save('CVresults_murRegAllPos_jointSegNonRandomSegExtraction.mat',...
+save('CVresults_noise_murRegAllPos_jointSegNonRandomSegExtraction.mat',...
     'CVresults','description','train_settings')
 

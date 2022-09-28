@@ -135,7 +135,7 @@ load('HSdata.mat','HSdata')
 
 
 if ~trainNet && isempty(preTrainedNetworks)
-    error('pretrained networks not provided')
+    error('Include argument "preTrainedNetworks" with array of trained networks')
 end
 
 Nsplits = 8;
