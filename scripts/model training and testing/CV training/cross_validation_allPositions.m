@@ -130,7 +130,7 @@ if get_settings_only
     return
 end
 %% body
-
+Nsplits = 8;
 load('HSdata.mat','HSdata')
 
 
@@ -138,7 +138,7 @@ if ~trainNet && isempty(preTrainedNetworks)
     error('pretrained networks not provided')
 end
 
-Nsplits = 8;
+
 
 if ~regression
     % target is binary, set threshold defining positive class:

@@ -68,14 +68,16 @@ if isempty(Seg)
                                                 'jointSeg',jointSeg,...
                                                 'T_smooth_acf',T_smooth_acf);
     fitInfo.segmentation = Seg;
+
 else
     fitInfo = [];
 end
 
-% container for murmur predictions:
+% container for whole-audio murmur predictions:
 Y = zeros(N_audio,1);
-
+% container for segment-wise murmur predictions:
 A = cell(1,N_audio);
+
 for aa=1:N_audio
     
     if noise_index(aa)==0

@@ -57,11 +57,11 @@ for aa=1:4
     Jdevelop = find(Idevelop);
     
     % segment extraction settings:
-    N.ds = 20; % how much to downsample signal
-    N.cs = 4;  % How many heartbeats per segment
-    N.os = 2;  % by how many heartbeats do the segments overlap
-    N.segPerPCG = 6; % how many segments to extract per recording
-    Ncomp = [13,200]; % MFCC of segments are reshaped to these dimensions
+    N_downSample = 20; % how much to downsample signal
+    N_cyclesPerSegmentDesired = 4;  % How many heartbeats per segment
+    N_cycleOverlap = 2;  % by how many heartbeats do the segments overlap
+    N_segmentsPerAudioDesired = 8; % how many segments to extract per recording
+    MFCC_sz = [13,200]; % MFCC of segments are reshaped to these dimensions
     
     % define the labels:
     targetStr = sprintf('murGrade%g',aa);
@@ -82,16 +82,22 @@ for aa=1:4
     balanceVal = true;
     
     if trainNet || getTrainData
-       % *** get training data ***
-       [Xtrain{aa},Ytrain{aa}] = genTrainOrValSet_new(HSdata,Y0,Jtrain,N,aa,...
-                                        balanceTrain,nodes0,Ncomp,[],posThr);
+       % *** get training data ***genTrainOrValSet
+       [Xtrain{aa},Ytrain{aa}] = genTrainOrValSet(HSdata,Y0,Jtrain,N,aa,nodes0,...
+                                'N_cycleOverlap',N_cycleOverlap,...
+                                'N_cyclesPerSegmentDesired',N_cyclesPerSegmentDesired,...
+                                'N_segmentsPerAudioDesired',N_segmentsPerAudioDesired,...
+                                'N_downSample',N_downSample,...
+                                'balanceClasses',balanceTrain,...
+                                'posThr',thr_resample,...
+                                'MFCC_sz',MFCC_sz);
     end
    % *** get validation data ***
-   [Xval{aa},Yval{aa}] = genTrainOrValSet_new(HSdata,Y0,Jval,N,aa,...
+   [Xval{aa},Yval{aa}] = genTrainOrValSet(HSdata,Y0,Jval,N,aa,...
                                     balanceVal,nodes0,Ncomp,[],posThr);
     % *** get validation data ***
     balanceTest = false;
-   [Xtest{aa},Ytest{aa}] = genTrainOrValSet_new(HSdata,Y0,Jtest,N,aa,...
+   [Xtest{aa},Ytest{aa}] = genTrainOrValSet(HSdata,Y0,Jtest,N,aa,...
                                              balanceTest,nodes0,Ncomp,[]);
     
     % save indeces and id's for validation and data:
