@@ -1,16 +1,16 @@
 R = ["CVresults_murRegAllPos_jointSegNonRandomSegExtraction",...
     "CVresults_netMurRegAllPos_valStop_overTrain"];
 
-load CVresults_murRegAllPos_jointSegNonRandomSegExtraction.mat
+load CVresults_noise_murRegAllPos_jointSegNonRandomSegExtraction.mat
 
 
-targetType = 'AS';
+targetType = 'murmur';
 classThr   = 2;
 [predPerf,All] = CV_SinglePosPred_performanceSummary(CVresults,...
                                                   targetType,...
                                                   classThr,...
                                                   HSdata)
-mean(predPerf.murPred.eachAA.AS.g2.AUCmat)
+mean(predPerf.murPred.eachAA.murmur.g2.AUCmat)
                                               %%
                                                              
 compactLinModelPresentation(glm{1})
