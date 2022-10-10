@@ -5,21 +5,32 @@ function [predPerf,All] = CV_SinglePosPred_performanceSummary(CVresults,...
 %% description
 % extracts prediction performance results from cross validation results
 % structure using predictions for each position respectively.
+%% target types
+if nargin==0
+    disp("target types: murmur, murmurAgreed, avmeanpg")
+end
 %% optional arguments
 plotROC1 = true;
 plotROC2 = false;
-minSn   = 0.92;
+minSn    = 0.92;
+I_include = [];
 
+    
 p = inputParser;
 addOptional(p,'plotROC1',plotROC1)
 addOptional(p,'plotROC2',plotROC2)
 addOptional(p,'minSn',minSn)
+addOptional(p,'I_include',I_include)
 parse(p,varargin{:})
 
 plotROC1 = p.Results.plotROC1;
 plotROC2 = p.Results.plotROC2;
-minSn   = p.Results.minSn;
+minSn    = p.Results.minSn;
+I_include   = p.Results.I_include;
 %%
+
+% exclude subset of samples from metric calculation if requested:
+CVresults = exclude_subset_from_evalutation(CVresults,I_include);
 
 Nsplits = 8;
 % storage variables:
@@ -41,7 +52,8 @@ for i=1:Nsplits
         
         if targetType=="murmur"
             targetVar = sprintf('murGrade%g',aa);
-            
+        elseif targetType=="murmurAgreed"
+            targetVar = sprintf('murAgreed%g',aa);
         elseif targetType=="avmeanpg"
             targetVar ="ASPGgrade";
             HSdata.ASPGgrade = HSdata.avmeanpg>=classThr;

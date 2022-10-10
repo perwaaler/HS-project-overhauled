@@ -1,16 +1,18 @@
 R = ["CVresults_murRegAllPos_jointSegNonRandomSegExtraction",...
     "CVresults_netMurRegAllPos_valStop_overTrain"];
 
-load CVresults_noise_murRegAllPos_jointSegNonRandomSegExtraction.mat
+load CVresults_netMurRegAllPos_valStop_overTrain.mat
 
-targetType = 'AS';
-classThr = 2;
+targetType = 'avmeanpg';
+classThr = 20;
 [predPerf,S,All,glm] = CV_VHDpredRiskFacModel_performanceSummary(CVresults,...
                                                   targetType,...
                                                   classThr,...
                                                   HSdata,...
-                                                  'murmur_variable','AS_calibrated_murmur')
+                                                  'murmur_variable','pred_AScalibrated');
                                                              
+predPerf.riskFac.avmeanpg.(sprintf('g%g',classThr)).T
+%%           
 compactLinModelPresentation(glm{1})
 close all
 getAUCandPlotROC(All.activ,All.target,'plot',true)

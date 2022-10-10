@@ -9,7 +9,7 @@ elseif diseaseName=="AS"
     diseaseIndex = 3;
 elseif diseaseName=="MS"
     diseaseIndex = 4;
-elseif diseaseName=="avmpg"
+elseif diseaseName=="avmeanpg"
     diseaseIndex = 1;
 elseif diseaseName=="ASpg"
     diseaseIndex = 1;

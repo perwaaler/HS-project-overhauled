@@ -2,11 +2,14 @@ R = ["CVresults_murRegAllPos_jointSegNonRandomSegExtraction",...
     "CVresults_netMurRegAllPos_valStop_overTrain",...
     "CV"];
 
-load CVresults_noise_murRegAllPos_jointSegNonRandomSegExtraction.mat
+load CVresults_netMurRegAllPos_valStop_overTrain.mat
 
-targetType = 'AS';
-classThr = 1;
-[predPerf,S,All] = CV_VHDpred_performanceSummary(CVresults,targetType,classThr,HSdata)
+targetType = 'avmeanpg';
+classThr = 20;
+[predPerf,S,All] = CV_VHDpred_performanceSummary(CVresults,...
+                                                targetType,...
+                                                classThr,...
+                                                HSdata)
 
 close all
 getAUCandPlotROC(All.activ,All.target,'plot',true)

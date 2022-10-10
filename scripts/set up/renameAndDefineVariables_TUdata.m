@@ -16,6 +16,17 @@ HSdata.murGrade2 = mean([HSdata.murGrade2_ad,HSdata.murGrade2_sa],2);
 HSdata.murGrade3 = mean([HSdata.murGrade3_ad,HSdata.murGrade3_sa],2);
 HSdata.murGrade4 = mean([HSdata.murGrade4_ad,HSdata.murGrade4_sa],2);
 
+% murmur agreement using REF variable:
+HSdata.murAgreed1_REF = or(HSdata.MURMUR_1SYS_REF_T72, HSdata.MURMUR_1DIA_REF_T72);
+HSdata.murAgreed2_REF = or(HSdata.MURMUR_2SYS_REF_T72, HSdata.MURMUR_2DIA_REF_T72);
+HSdata.murAgreed3_REF = or(HSdata.MURMUR_3SYS_REF_T72, HSdata.MURMUR_3DIA_REF_T72);
+HSdata.murAgreed4_REF = or(HSdata.MURMUR_4SYS_REF_T72, HSdata.MURMUR_4DIA_REF_T72);
+
+HSdata.murDisagreement1 = (HSdata.murGrade1_ad>0)~=(HSdata.murGrade1_sa>0);
+HSdata.murDisagreement2 = (HSdata.murGrade2_ad>0)~=(HSdata.murGrade2_sa>0);
+HSdata.murDisagreement3 = (HSdata.murGrade3_ad>0)~=(HSdata.murGrade3_sa>0);
+HSdata.murDisagreement4 = (HSdata.murGrade4_ad>0)~=(HSdata.murGrade4_sa>0);
+
 % diastolic murmur for each location:
 HSdata.diastolicMur1 = HSdata.MURMUR_1DIA_REF_T72;
 HSdata.diastolicMur2 = HSdata.MURMUR_2DIA_REF_T72;
@@ -82,8 +93,11 @@ HSdata.diastMurAtLeastOne = myor({HSdata.diastolicMur1,...
                                   HSdata.diastolicMur4});
                            
 
-HSdata.murGradeSum = sum([HSdata.murGrade1,HSdata.murGrade2,HSdata.murGrade3,HSdata.murGrade4],2);
-HSdata.murGradeMax = max([HSdata.murGrade1,HSdata.murGrade2,HSdata.murGrade3,HSdata.murGrade4],[],2);
+x = [HSdata.murGrade1,HSdata.murGrade2,HSdata.murGrade3,HSdata.murGrade4];
+HSdata.murGradeSum = sum(x,2);
+HSdata.murGradeMax = max(x,[],2);
+HSdata.murGradeSumAP = sum(x(:,1:2),2);
+HSdata.murGradeMaxAP = sum(x(:,1:2),2);
 
 %% Redefining AS from mean-pressure-gradient:
 % note: if avmeanpg was not available, then the original AS grade was used

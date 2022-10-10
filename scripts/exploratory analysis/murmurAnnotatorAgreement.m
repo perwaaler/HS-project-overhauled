@@ -1,4 +1,4 @@
-% Assesment of annotator interrater agreement.
+% Assesment of interrater agreement.
 thr = 2;
 IadMax = max([HSdata.MURMUR_1GRADENRAD_T72,HSdata.MURMUR_2GRADENRAD_T72...
     HSdata.MURMUR_3GRADENRAD_T72,HSdata.MURMUR_4GRADENRAD_T72],[],2);

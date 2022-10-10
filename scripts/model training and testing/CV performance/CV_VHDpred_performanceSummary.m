@@ -1,7 +1,8 @@
 function [predPerf,S,All] = CV_VHDpred_performanceSummary(CVresults,...
                                                           targetType,...
                                                           classThr,...
-                                                          HSdata,varargin)                                           
+                                                          HSdata,...
+                                                          varargin)                                           
 %% description
 % extracts VHD prediction performance results from cross validation results
 % structure.
@@ -10,16 +11,30 @@ function [predPerf,S,All] = CV_VHDpred_performanceSummary(CVresults,...
 % {'sigSymptVHD','sigAsymptVHD','ARsigSympt','sigVHD31','AR','MR','AS','MS','costumTarget'}
 %
 %% optional arguments
-plotROC = true;
-murVar = "";
+P.plotROC = true;
+if targetType=="AS"||targetType=="avmeanpg"
+    P.murVar = "pred_AScalibrated";
+else
+    P.murVar = "pred_max";
+end
 
 p = inputParser;
-addOptional(p,'plotROC',plotROC)
-addOptional(p,'murVar',murVar)
+addOptional(p,'plotROC',P.plotROC)
+addOptional(p,'murVar',P.murVar)
 parse(p,varargin{:})
 
-plotROC = p.Results.plotROC;
-murVar = p.Results.murVar;
+P = updateOptionalArgs(P,p);
+
+%% body
+if ~isfield(CVresults.valTot,"J")
+    CVresults = get_positions_CVresults(CVresults,"valTot");
+end
+
+if isfield(CVresults.val,"activations")
+    str_activ = "activations";
+else
+    str_activ = "activ";
+end
 
 %% body
 
@@ -55,19 +70,25 @@ for i=1:Nsplits
     end
     
     % *** padded activation matrices ***
-    ActMatVal = getZeroPaddedActivMatrix(CVresults.val.activations(i,:),...
+    ActMatVal = getZeroPaddedActivMatrix(CVresults.val.(str_activ)(i,:),...
                                          CVresults.val.J(i,:),N_HSdata);
-    ActMatTrain = getZeroPaddedActivMatrix(CVresults.train.activations(i,:),...
+    ActMatTrain = getZeroPaddedActivMatrix(CVresults.train.(str_activ)(i,:),...
                                            CVresults.train.J(i,:),N_HSdata);
     
     ActMat = ActMatTrain + ActMatVal;
     minSn = 0.5;
     minSp = 0.0;
-    [activ,u0,Ytarget,Ypred,AUC,glm{i}] = get_sigVHDactivations(ActMat,HSdata,...
+    [activ,u0,Ytarget,Ypred,AUC,glm{i}] = get_sigVHDactivations(...
+                                            ActMat,...
+                                            HSdata,...
                                             CVresults.trainTot.I{i},...
                                             CVresults.valTot.I{i},...
-                                            targetType,classThr,...
-                                            false,minSn,minSp,murVar);
+                                            targetType,...
+                                            P.murVar,...
+                                            'classThr',classThr,...
+                                            'plot',false,...
+                                            'minSn',minSn,...
+                                            'minSp',minSp);
     % *** store results ***                    
     Y_pred_all{i}   = Ypred.val;
     activ_all{i}    = activ.val;
@@ -96,9 +117,9 @@ S.(targetType) = succAndFailureAnalysis(All.pred,All.target,Jval_all,HSdata,...
                 'sigVHD31','ASgrade','MSgrade','ARgrade','MRgrade',...
                 'ARsigSympt','MRsigSympt','sigSymptVHD'});
 
-if plotROC
+if P.plotROC
     hold on
-    getAUCandPlotROC(All.activ,All.target,'plot',plotROC)
+    getAUCandPlotROC(All.activ,All.target,'plot',P.plotROC)
 end
 
 % get table with statistics on SN, SP, and AUC:

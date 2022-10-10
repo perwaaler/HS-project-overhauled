@@ -2,46 +2,53 @@ function [predPerf,S,All,glm] = CV_VHDpredRiskFacModel_performanceSummary(...
                                                           CVresults,...
                                                           targetType,...
                                                           classThr,...
-                                                          HSdata,varargin)                                           
+                                                          HSdata,...
+                                                          varargin)                                           
 %% description
 % extracts VHD prediction performance results from cross validation results
 % structure.
 
+% possible auscultation based predictor variables:
+% x = array2table(1:13,'v',...
+%     ["pred_AScalibrated","pred_max","pred_sum","pred_maxAP","pred_sumAP",...
+%      "pred_pos1","pred_pos2","pred_pos3","pred_pos4",...
+%      "murGrade1","murGrade2","murGrade3","murGrade4",...
+%      "murGradeMax","murGradeSum","murGradeMaxAP","murGradeSumAP"])
+%
 % possible target types: {AR,MR,AS,MS}
-% possible murmur predictors: {predMaxMurGrade, murGradeMax,
-%                              AS_calibrated_murmur, murGrade1}
 %% optional arguments
+
 % default models:
 if targetType=="AR"
-    predictor_names = {'Xmur','age','sex','dyspneaFastUpphill','pulseSpiro'};
-    murmur_variable = "predMaxMurGrade";
+    P.predictor_names = {'Xmur','age','sex','dyspneaFastUpphill','pulseSpiro'};
+    P.murmur_variable = "pred_max";
 elseif targetType=="MR"
-    predictor_names = {'Xmur','age','pulseSpiro'};
-    murmur_variable = "predMaxMurGrade";
+    P.predictor_names = {'Xmur','age','pulseSpiro'};
+    P.murmur_variable = "pred_max";
 elseif targetType=="AS"
-    predictor_names = {'Xmur','sex','sex:Xmur'};
-    murmur_variable = "AS_calibrated_murmur";
+    P.predictor_names = {'Xmur','sex','sex:Xmur'};
+    P.murmur_variable = "pred_AScalibrated";
 elseif targetType=="MS"
-    predictor_names = {'Xmur','age','pulseSpiro'};
-    murmur_variable = "predMaxMurGrade";
+    P.predictor_names = {'Xmur','age','pulseSpiro'};
+    P.murmur_variable = "pred_max";
+elseif targetType=="avmeanpg"
+    P.predictor_names = {'Xmur','sex','sex:Xmur'};
+    P.murmur_variable = "pred_AScalibrated";
 end
-plotROC = false;
-minSn = 0.5;
-minSp = 0;
+
+P.plotROC = false;
+P.minSn = 0.5;
+P.minSp = 0;
 
 p = inputParser;
-addOptional(p,'predictor_names',predictor_names)
-addOptional(p,'murmur_variable',murmur_variable)
-addOptional(p,'plotROC',plotROC)
-addOptional(p,'minSn',minSn)
-addOptional(p,'minSp',minSp)
+addOptional(p,'predictor_names',P.predictor_names)
+addOptional(p,'murmur_variable',P.murmur_variable)
+addOptional(p,'plotROC',P.plotROC)
+addOptional(p,'minSn',P.minSn)
+addOptional(p,'minSp',P.minSp)
 parse(p,varargin{:})
 
-predictor_names = p.Results.predictor_names;
-murmur_variable = p.Results.murmur_variable;
-plotROC = p.Results.plotROC;
-minSn = p.Results.minSn;
-minSp = p.Results.minSp;
+P = updateOptionalArgs(P,p);
 
 %% body
 
@@ -54,7 +61,7 @@ N_splits = 8;
 HSdata.Xmur = zeros(N_HSdata,1);
 
 % ¤¤ SELECT RISK FACTOR MODEL FOR EACH VHD ¤¤
-names.all.var = {murmur_variable,'age','pulseSpiro','sex',...
+names.all.var = {P.murmur_variable,'age','pulseSpiro','sex',...
                 'dyspneaFastUpphill','chestPain','highBP',...
                 'diabetes','smoke','smokeCurrent'};
 names.all.categorical = {'sex','dyspneaFastUpphill','chestPain',...
@@ -63,7 +70,7 @@ names.all.categorical = {'sex','dyspneaFastUpphill','chestPain',...
 VHD_ind = disease2index(targetType);
 
 % find raw data model predictors from HSdata
-raw_vars_from_HSdata = intersect(predictor_names,...
+raw_vars_from_HSdata = intersect(P.predictor_names,...
                                  HSdata.Properties.VariableNames);
 % find rows with one or more missing predictor values:
 I_nan = ismissing(HSdata(:,raw_vars_from_HSdata));
@@ -90,12 +97,20 @@ for i=1:N_splits
     % get activation matrix (training and validation rows do not overlap):
     ActMat = ActMatVal + ActMatTrain;
     
-    [activ,~,Ytarget,Ypred,AUC,glm{i}] = get_riskFacModelActivations(ActMat,...
-                            HSdata, CVresults.trainTot.I{i},...
-                            CVresults.valTot.I{i}, I_complete,...
-                            targetType, murmur_variable,...
-                            predictor_names, names.all.categorical,...
-                            classThr, false, minSn, minSp);
+    [activ,~,Ytarget,Ypred,AUC,glm{i}] = get_riskFacModelActivations(...
+                            ActMat,...
+                            HSdata,...
+                            CVresults.trainTot.I{i},...
+                            CVresults.valTot.I{i},...
+                            I_complete,...
+                            targetType,...
+                            P.murmur_variable,...
+                            P.predictor_names,...
+                            names.all.categorical,...
+                            'classThr',classThr,...
+                            'plotVal',false,...
+                            'minSn', P.minSn,...
+                            'minSp', P.minSp);
                         
     % *** store results ***
     All.target{i} = Ytarget.val;
@@ -128,7 +143,7 @@ predPerf.riskFac.(targetType).(num2name(classThr)).auc = AUCmat;
 % All.pred:
 S.(targetType) = succAndFailureAnalysis(All.pred,All.target,J_val,HSdata,...
                                       {'murGradeMax','avmeanpg','avarea'});
-if plotROC
+if P.plotROC
     AUC = getAUCandPlotROC(All.activ, All.target, 'plot', plotROC);
     title(sprintf('AUC=%g',round(AUC,3)))
 end

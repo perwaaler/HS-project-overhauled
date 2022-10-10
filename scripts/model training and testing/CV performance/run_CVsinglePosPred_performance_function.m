@@ -5,12 +5,21 @@ load CVresults_noise_murRegAllPos_jointSegNonRandomSegExtraction.mat
 
 
 targetType = 'murmur';
-classThr   = 2;
+
+% specify subset to exclude in metric calculations:
+for aa=1:4
+    I_include{aa} = ~HSdata.(sprintf("murDisagreement%g",aa));
+end
+
+classThr = 1;
+close
 [predPerf,All] = CV_SinglePosPred_performanceSummary(CVresults,...
-                                                  targetType,...
-                                                  classThr,...
-                                                  HSdata)
-mean(predPerf.murPred.eachAA.murmur.g2.AUCmat)
+                                                      targetType,...
+                                                      classThr,...
+                                                      HSdata,...
+                                                      'I_include',[])
+predPerf.murPred.eachAA.(targetType).(sprintf('g%g',classThr)).AUCmat
+
                                               %%
                                                              
 compactLinModelPresentation(glm{1})
