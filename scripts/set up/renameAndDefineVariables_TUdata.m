@@ -99,6 +99,9 @@ HSdata.murGradeMax = max(x,[],2);
 HSdata.murGradeSumAP = sum(x(:,1:2),2);
 HSdata.murGradeMaxAP = sum(x(:,1:2),2);
 
+%% Creating avmeanpg weighted by murmur grade
+create_weighted_murmur_columns
+
 %% Redefining AS from mean-pressure-gradient:
 % note: if avmeanpg was not available, then the original AS grade was used
 % as as the grade for the participant. There were 23 such cases.

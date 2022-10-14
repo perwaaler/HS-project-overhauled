@@ -4,14 +4,14 @@ R = ["CVresults_murRegAllPos_jointSegNonRandomSegExtraction",...
 load CVresults_noise_murRegAllPos_jointSegNonRandomSegExtraction.mat
 
 
-targetType = 'murmur';
+targetType = 'AS';
 
 % specify subset to exclude in metric calculations:
 for aa=1:4
     I_include{aa} = ~HSdata.(sprintf("murDisagreement%g",aa));
 end
 
-classThr = 1;
+classThr = 2;
 close
 [predPerf,All] = CV_SinglePosPred_performanceSummary(CVresults,...
                                                       targetType,...

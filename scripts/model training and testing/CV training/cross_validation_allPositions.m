@@ -7,13 +7,15 @@ function [CVresults,AUCmat,p,Xtrain,Ytrain] = cross_validation_allPositions(...
 % other information nessecary to perform analysis of the results.
 
 %% optional arguments
-targetType = "murmur"; % examples: "murmur", "ARgrade", "avmeanpg"...
+target_type = "murmur"; % examples: "murmur", "ARgrade", "avmeanpg"...
 % target type (classification or regression):
+HSdata = [];
 regression = true;
 getTrainData = true;
 trainNet = true;
 trainOnlyOnClean = true;
-% *** class thresholds ***
+
+% class thresholds ***
 % threshold that defines pathological class (used in classification):
 thr_pathology = 2;
 % choose threshold that defines class from which to resample (used in
@@ -25,10 +27,13 @@ test_target = "murmur";
 thr_testTarget = 1;
 % name of file to uppload if you want to load pretrained networks:
 preTrainedNetworks = [];
-% plotting:
+
+% plotting ***
 plotROC = true;
 % set which CV partitions to loop over:
 CV_set_indeces = 1:8;
+
+% training ***
 % balance between positive and negative class:
 balanceTrain = true;
 balanceVal   = true;
@@ -58,10 +63,11 @@ get_settings_only = false;
 
 p = inputParser;
 addOptional(p,'getTrainData',getTrainData)
+addOptional(p,'HSdata',HSdata)
 addOptional(p,'trainNet',trainNet)
 addOptional(p,'trainOnlyOnClean',trainOnlyOnClean)
 addOptional(p,'preTrainedNetworks',preTrainedNetworks)
-addOptional(p,'targetType',targetType)
+addOptional(p,'target_type',target_type)
 addOptional(p,'balanceTrain',balanceTrain)
 addOptional(p,'balanceVal',balanceVal)
 addOptional(p,'regression',regression)
@@ -92,10 +98,11 @@ addOptional(p,'get_settings_only',get_settings_only)
 parse(p,varargin{:})
 
 getTrainData = p.Results.getTrainData;
+HSdata = p.Results.HSdata;
 trainNet = p.Results.trainNet;
 trainOnlyOnClean = p.Results.trainOnlyOnClean;
 preTrainedNetworks = p.Results.preTrainedNetworks;
-targetType = p.Results.targetType;
+target_type = p.Results.target_type;
 balanceTrain = p.Results.balanceTrain;
 balanceVal = p.Results.balanceVal;
 regression = p.Results.regression;
@@ -129,16 +136,34 @@ if get_settings_only
     AUCmat = [];
     return
 end
-%% body
+
 Nsplits = 8;
-load('HSdata.mat','HSdata')
 
-
-if ~trainNet && isempty(preTrainedNetworks)
-    error('Include argument "preTrainedNetworks" with array of trained networks')
+if isempty(HSdata)
+    load('HSdata.mat','HSdata')
 end
 
 
+if ~trainNet
+    
+    if isempty(preTrainedNetworks)
+        error('Include argument "preTrainedNetworks" with array of trained networks')
+        
+    elseif ~iscell(preTrainedNetworks)
+        n = numel(CV_set_indeces);
+        preTrainedNetworks = cell(1,n);
+        for i=1:n
+            ii = CV_set_indeces(i);
+            file_name = strcat(save_net_folder,'\',sprintf('net%g', ii));
+            load(file_name,'net');
+            preTrainedNetworks{ii} = net;
+        end
+    
+    end
+end
+
+
+%%
 
 if ~regression
     % target is binary, set threshold defining positive class:
@@ -192,10 +217,12 @@ for aa=1:4
     Jval   = find(Ival);
     
     % get name of column with target variable:
-    if targetType=="murmur"
+    if target_type=="murmur"
         targetStr = sprintf('murGrade%g',aa);
+    elseif target_type=="avmeanpg_weighted"
+        targetStr = sprintf('avmeanpg%g',aa);
     else
-        targetStr = targetType;
+        targetStr = target_type;
     end
     
     % extract target variable from the data-table:
@@ -217,7 +244,7 @@ for aa=1:4
                                 'balanceClasses',balanceTrain,...
                                 'posThr',thr_resample,...
                                 'MFCC_sz',MFCC_sz);
-end
+    end
     
    % *** get validation data ***
    [Xval{aa},Yval{aa}] = genTrainOrValSet(HSdata,Y0,Jval,aa,nodes,...
