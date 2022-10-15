@@ -39,9 +39,9 @@ plot(thr_list,AUC2(:,1),'r','LineWidth',4)
 plot(thr_list,AUC2(:,2:3),'--r')
 
 ylim([80,100])
-ylabel('AUC')
+ylabel('AUC (multivar-model)')
 xlabel('AS threshold (AVmeanPG)')
-
+title('Springer vs modified Springer')
 
 
 
@@ -85,8 +85,10 @@ plot(thr_list,AUC2(:,1),'r','LineWidth',4)
 plot(thr_list,AUC2(:,2:3),'--r')
 
 ylim([80,100])
-ylabel('AUC')
+ylabel('AUC (multivar-model)')
 xlabel('AS threshold (AVmeanPG)')
+title('Grade target vs Binary targets')
+
 
 
 
@@ -214,7 +216,7 @@ for i_thr=1:N_thr
     % method 2
     [predPerf] = CV_VHDpred_performanceSummary(CVresults,targetType,...
                                                      classThr,HSdata,...
-                                                     'mur','pred_maxAP');
+                                                     'mur','pred_sumAP');
     auc2 = predPerf.murPred.allPos.avmeanpg.(s).auc;
     AUC2(i_thr,:) = predPerf.murPred.allPos.avmeanpg.(s).T.AUC(1:3)';
     
@@ -231,7 +233,7 @@ plot(thr_list,AUC1(:,2:3),'--b')
 plot(thr_list,AUC2(:,1),'r','LineWidth',4)
 plot(thr_list,AUC2(:,2:3),'--r')
 
-title('AVmeanPG-calibrated (blue) vs max of pulmonic and aortic MG (red)')
-ylim([50,100])
+title('AVmeanPG-calibrated (blue) vs sum of pulmonic and aortic MG (red)')
+ylim([80,100])
 ylabel('AUC')
 xlabel('AS threshold (AVmeanPG)')

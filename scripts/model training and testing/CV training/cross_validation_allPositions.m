@@ -221,6 +221,8 @@ for aa=1:4
         targetStr = sprintf('murGrade%g',aa);
     elseif target_type=="avmeanpg_weighted"
         targetStr = sprintf('avmeanpg%g',aa);
+    elseif target_type=="murGrade_weighted"
+        targetStr = sprintf('murGrade_wgt%g',aa);
     else
         targetStr = target_type;
     end
@@ -348,7 +350,7 @@ if trainNet
     net = trainNetwork(Xtrain_all,Ytrain_all,layers,options);
     
     % save network in folder for temporarily saved networks:
-    save(strcat(save_net_folder,'\',sprintf('net%g.mat',k)), 'net');
+    save(strcat(save_net_folder,'\',sprintf('net%g.mat',k)), 'net', 'p');
 end
 
 if ~trainNet
