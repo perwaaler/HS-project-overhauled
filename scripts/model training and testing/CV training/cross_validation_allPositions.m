@@ -57,7 +57,7 @@ MaxEpochs = 50;
 LearnRateDropFactor = 0.5;
 LearnRateDropPeriod = 5;
 initialLearnRate = 0.002;
-N_validation_stoppage = 10;
+N_validation_stoppage = 7;
 checkValAccuracy = true;
 get_settings_only = false;
 

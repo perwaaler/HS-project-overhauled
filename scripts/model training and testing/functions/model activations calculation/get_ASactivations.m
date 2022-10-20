@@ -40,14 +40,15 @@ end
 
 X = array2table(ActMat,'v',{'A','P','T','M'});
 Yavmpg = array2table(HSdata.avmeanpg,'v',{'avmpg'});
+YavmpgSqrt = array2table(sqrt(HSdata.avmeanpg),'v',{'avmpg_sqrt'});
 Yas = array2table(HSdata.(target)>=P.classThr,'v',{'as'});
 noise = array2table(ActMat==0,'v',{'noiseA','noiseP','noiseT','noiseM'});
-
-data = [X,noise,Yavmpg,Yas];
+% stack tables side by side
+data = [X,noise,Yavmpg,YavmpgSqrt,Yas];
 I_avmpgTrain = and(Itrain, ~isnan(data.avmpg));
 % *** fit model using training data ***
-formula = 'avmpg ~ A:A + P:P + T + (A:A):noiseP + noiseP:noiseA:noiseT:M';
-% formula = 'avmpg ~ A:A + P:P + T + P:P:noiseA + (A:A):noiseP + noiseP:noiseA';
+% formula = 'avmpg_sqrt ~ A:A + P:P + T + (A:A):noiseP + noiseP:noiseA:noiseT:M';
+formula = 'avmpg_sqrt ~ A:A + P + T + M:M + A:T + (A:A):noiseP + noiseP:noiseA:noiseT:M';
 glm = fitglm(data(I_avmpgTrain,:),formula);
                     
 

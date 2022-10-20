@@ -193,12 +193,13 @@ xlabel('AS threshold (AVmeanPG)')
 
 %% experiment 5: AS-calibrated murmur vs sum
 targetType = 'avmeanpg';
-load CVresults_netMurRegAllPos_valStop_overTrain.mat
+load CVresults_noise_murRegAllPos_jointSegNonRandomSegExtraction.mat
 
 thr_list = 3:2:25;
 N_thr = numel(thr_list);
 AUC1 = zeros(N_thr,3);
 AUC2 = zeros(N_thr,3);
+diff = zeros(N_thr,3);
 p_vals = 1:N_thr;
 
 for i_thr=1:N_thr
@@ -216,10 +217,11 @@ for i_thr=1:N_thr
     % method 2
     [predPerf] = CV_VHDpred_performanceSummary(CVresults,targetType,...
                                                      classThr,HSdata,...
-                                                     'mur','pred_sumAP');
+                                                     'mur','pred_sum');
     auc2 = predPerf.murPred.allPos.avmeanpg.(s).auc;
     AUC2(i_thr,:) = predPerf.murPred.allPos.avmeanpg.(s).T.AUC(1:3)';
     
+    diff(i_thr) = mean(auc1-auc2);
     p_vals(i_thr) = pValue(auc1-auc2,"twosided");
 end
 

@@ -1,9 +1,8 @@
 % Exploring linear combinations of murmur-grade to improve AS-prediction.
 %%
-CVresults.val.J
-CVresults.val.activations
-load CVresults_netMurRegAllPos_valStop_overTrain
-%%
+load('CVresults_netMurRegAllPos_valStop_overTrain.mat','CVresults')
+
+%% test out selecting weights manually
 [paddedActivMatrix,JatleastOne] = getZeroPaddedActivMatrix(CVresults.val.activations,...
                                                          CVresults.val.J);
 
@@ -52,9 +51,9 @@ AUC = getAUC(Ytarget,activ)
 [paddedActivMatrix,JatleastOne] = getZeroPaddedActivMatrix(CVresults.val.activations,...
                                                          CVresults.val.J);
 X1 = array2table(paddedActivMatrix(JatleastOne,:),'v',{'A','P','T','M'});
-Ytrain = array2table(sqrt(HSdata.AVMEANPG_T72(JatleastOne)),'v',{'avmpg'});
+Ytrain = array2table(sqrt(HSdata.avmeanpg(JatleastOne)),'v',{'avmeanpg'});
 noise = array2table(paddedActivMatrix(JatleastOne,:)==0,'v',...
-    {'noiseA','noiseP','noiseT','noiseM'});
+                    {'noiseA','noiseP','noiseT','noiseM'});
 Yas = array2table(HSdata.ASgrade(JatleastOne)>=1,'v',{'as'});
 dataMdl = [X1,X2,X3,noise,Ytrain,Yas];
 dataMdl = dataMdl(~isnan(dataMdl.avmpg),:);
@@ -72,7 +71,7 @@ Jtrain = intersect(JatleastOne,find(~isnan(dataMdl.avmpg)));
 % glm = fitglm(dataMdl,'avmpg ~ A:A + P + M + T');
 % glm = fitglm(dataMdl,'avmpg ~ A:A + P + M + T + T:noiseA:noiseP');
 % glm = fitglm(dataMdl,'avmpg ~ A:A + P + M + T + T:noiseA:noiseP + M:noiseA:noiseP:noiseT');
-formula = 'avmpg ~ A:A + P:P + T + P:P:noiseA + (A:A):noiseP + noiseP:noiseA';
+formula = 'avmeanpg ~ A:A + P:P + T + P:P:noiseA + (A:A):noiseP + noiseP:noiseA';
 glm = fitglm(dataMdl,formula);
 glm.Coefficients;
 % glm = fitglm(dataMdl,'avmpg ~ A + A2+ P + M + T2 + T*noiseA*noiseP + M*noiseA*noiseP*noiseT');

@@ -49,8 +49,8 @@ if  murVar=="pred_AScalibrated"
                                                     
                                                     
 else 
-    % ** get auscultation based predictor variable **
     
+    % ** get auscultation based predictor variable **
     if contains(murVar,"pred")
         % use algorithm auscultation aggragate-variabel:
         
