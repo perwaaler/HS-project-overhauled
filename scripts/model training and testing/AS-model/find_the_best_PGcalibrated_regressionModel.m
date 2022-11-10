@@ -28,8 +28,7 @@ Y_as = HSdata.avmeanpg>=classThr;
 Y = array2table([Y_avmeanpg,Y_sqrt_avmeanpg,Y_as],...
         'VariableNames',["avmeanpg","avmeanpg_sqrt","AS"]);
 
-noise = array2table(ActMat==0,...
-        'VariableNames',{'noiseA','noiseP','noiseT','noiseM'});
+noise = HSdata(:,["noise1","noise2","noise3","noise4"]);
 
 % collect in table:
 data = [X,Y,noise];
@@ -42,7 +41,7 @@ k = 0;
 %% update
 k = k+1
 
-F.formula{k,1} = 'avmeanpg_sqrt ~ A:A + P + T + M:M + A:T';
+F.formula{k,1} = 'avmeanpg_sqrt ~ A:A:A + P + T*T + M:M + A:T';
 lm_pgcal = fitglm(data(J_avmeanpgTrain,:), F.formula{k}, "Distribution", "normal");
 
 % predict
@@ -55,10 +54,26 @@ F.rmse(k,1) = rmse(y_pred,y_true,'omitnan');
 F.mae(k,1) = mae(y_pred,y_true,'omitnan');
 F.Rsqr(k,1) = lm_pgcal.Rsquared.Ordinary;
 F.Rsqr_adj(k,1) = lm_pgcal.Rsquared.Adjusted;
+F.fitted_model{k,1} = lm_pgcal;
 
+struct2table(F)
 disp(lm_pgcal.Coefficients)
 F.BIC'
 k
+corr(y_pred,y_true,'rows','complete')
+%%
+figure
+plot(y_true, y_pred,'o')
+xlabel('AVPGmean')
+ylabel('predicted AVPGmean')
+%%
+[m_maxk,i_maxk] = maxk(abs(y_pred.^2 - y_true.^2) .* ...
+                        (y_true.^2>8) , 5);
+J = J_train;
+y = [y_pred.^2, y_true.^2, J, ActMat(J_train,:)];
+
+array2table(y(i_maxk,:),'VariableNames',["prediction","avmeanpg","J",...
+                                         "mghat1","mghat2","mghat3","mghat4"])
 
 %%
 

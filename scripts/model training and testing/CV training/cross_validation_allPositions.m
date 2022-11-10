@@ -226,11 +226,23 @@ for aa=1:4
     else
         targetStr = target_type;
     end
+
+    if sum(HSdata.targetStr>=test_target)==0
+        warning('Lower threshold for test-target')
+    end
     
     % extract target variable from the data-table:
     if regression
         % target is continuous
         Y0 = HSdata.(targetStr);
+        % remove nan-values
+        Icomplete = ~isnan(Y0);
+        Jcomplete = find(Icomplete);
+        
+        Itrain = and(Itrain,Icomplete);
+        Ival   = and(Ival,  Icomplete);
+        Jtrain = intersect(Jtrain,Jcomplete);
+        Jval   = intersect(Jval,  Jcomplete);
     else
         % target is a binary:
         Y0 = HSdata.(targetStr)>=thr_pathology;
@@ -393,6 +405,13 @@ for aa=1:4
     
     if test_target=="murmur"
         targetName = sprintf('murGrade%g',aa);
+
+    elseif target_type=="avmeanpg_weighted"
+        targetName = sprintf('avmeanpg%g',aa);
+
+    elseif target_type=="murGrade_weighted"
+        targetName = sprintf('murGrade_wgt%g',aa);
+
     else
         targetName = test_target;
     end 
@@ -418,7 +437,9 @@ end
 
 activ = cell2mat(CVresults.val.activations(k,:)');
 Y  = cell2mat(Y_val_all);
+
 AUC = getAUCandPlotROC(activ,Y,'plotFigure',plotROC);
+
 AUCmat(k,5) = AUC;
 
 pause(.2)

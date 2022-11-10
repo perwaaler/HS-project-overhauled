@@ -49,18 +49,17 @@ if  murVar=="pred_AScalibrated"
                                                     
                                                     
 else 
-    
+
     % ** get auscultation based predictor variable **
     if contains(murVar,"pred")
         % use algorithm auscultation aggragate-variabel:
         
         if contains(murVar,"pos")
             % extract out corresponding column from activation matrix:
+            murVar = char(murVar);
             aa = str2double(murVar(end));
-            murActiv = ActMat(:,aa);
-            HSdata.Xmur(Itrain) = murActiv(Itrain);
-            HSdata.Xmur(Ival)   = murActiv(Ival);
-            
+            A = ActMat(:,aa);
+
         elseif murVar=="pred_max"
             A = max(ActMat,[],2);
             

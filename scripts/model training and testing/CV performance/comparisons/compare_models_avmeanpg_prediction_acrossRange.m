@@ -195,7 +195,7 @@ xlabel('AS threshold (AVmeanPG)')
 targetType = 'avmeanpg';
 load CVresults_noise_murRegAllPos_jointSegNonRandomSegExtraction.mat
 
-thr_list = 3:2:25;
+thr_list = 5:1:25;
 N_thr = numel(thr_list);
 AUC1 = zeros(N_thr,3);
 AUC2 = zeros(N_thr,3);

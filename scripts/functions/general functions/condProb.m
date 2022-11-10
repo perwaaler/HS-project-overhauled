@@ -39,6 +39,11 @@ if iscategorical(I2)
     I2 = (I2=='1');
 end
 
+% remove nans:
+I_complete = ~or(isnan(I1),isnan(I2));
+I1 = I1(I_complete);
+I2 = I2(I_complete);
+
 % *** compute conditional probability ***
 if iscell(I2)
     p = sum( myand([{I1}, I2]) )/sum(myand(I2));

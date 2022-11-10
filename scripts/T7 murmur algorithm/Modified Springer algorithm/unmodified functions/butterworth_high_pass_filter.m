@@ -48,7 +48,7 @@ if nargin < 5,
 end
 
 %Get the butterworth filter coefficients
-[B_high,A_high] = butter(order,2*cutoff/sampling_frequency,'high');
+[B_high,A_high] = butter(order,2*cutoff/sampling_frequency,'high')
 
 %Forward-backward filter the original signal using the butterworth
 %coefficients, ensuring zero phase distortion

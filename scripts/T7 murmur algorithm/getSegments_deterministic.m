@@ -22,10 +22,10 @@ N_cyclesPerSegmentDesired = p.Results.N_cyclesPerSegmentDesired;
 N_segDesired = p.Results.N_segDesired;
 
 %% example input
-% cycleLines = (1:10);
+% cycleLines = (1:19);
 % N_cycleOverlap = 3;
 % N_cyclesPerSegmentDesired = 4;
-% N_segDesired = 10;
+% N_segDesired = 3;
 % resampleIfNeeded = false;
 %% body
 N_stepSize = N_cyclesPerSegmentDesired - N_cycleOverlap;
@@ -71,7 +71,12 @@ else
     end
 end
 
-B = B(1:min(N_segDesired,c+k-1),:);
+if ~exist('c',"var")
+    B = B(1:N_segDesired,:);
+else
+    B = B(1:min(N_segDesired,c+k-1),:);
+end
+
 N_segExtracted = height(B);
 
 

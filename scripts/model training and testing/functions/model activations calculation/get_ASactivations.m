@@ -48,7 +48,7 @@ data = [X,noise,Yavmpg,YavmpgSqrt,Yas];
 I_avmpgTrain = and(Itrain, ~isnan(data.avmpg));
 % *** fit model using training data ***
 % formula = 'avmpg_sqrt ~ A:A + P:P + T + (A:A):noiseP + noiseP:noiseA:noiseT:M';
-formula = 'avmpg_sqrt ~ A:A + P + T + M:M + A:T + (A:A):noiseP + noiseP:noiseA:noiseT:M';
+formula = 'avmpg_sqrt ~ A:A:A + P + T*T + M:M + A:T + (A:A):noiseP + (M):noiseP:noiseA:noiseT';
 glm = fitglm(data(I_avmpgTrain,:),formula);
                     
 
