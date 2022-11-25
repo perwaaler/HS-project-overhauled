@@ -1,7 +1,8 @@
 function networks = collectTrainedNetsInArray(tempStorageFolder)
-% cpllects the networks in the temporary storage folder in a cell array,
+% collects the networks in the temporary storage folder in a cell array,
 % and writes the array to a file in the base of the folder which contains
-% all trained networks.
+% all trained networks. Either provide the path to the temporary storage
+% directory, or move to that directory and provide no argument.
 %% preliminary
 if nargin==0
     tempStorageFolder = pwd;

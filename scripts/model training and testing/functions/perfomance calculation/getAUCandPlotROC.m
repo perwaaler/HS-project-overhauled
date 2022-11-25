@@ -11,7 +11,7 @@ plotFigure = p.Results.plotFigure;
 
 %% body
 pos_class_label = true;
-[X, Y, T, AUC] = perfcurve(Ytarget, YmurPred, pos_class_label);
+[X, Y, T, AUC] = perfcurve(Ytarget, double(YmurPred), pos_class_label);
 
 if sum(YmurPred)==0
     X = nan;
