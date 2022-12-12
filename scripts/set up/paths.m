@@ -12,7 +12,6 @@ addpath(genpath('functions'));
 yaml_file_name = find_local_path_YAMLfile("local path files");
 paths_local = yaml.loadFile(fullfile("local path files", yaml_file_name));
 
-% Paths.project = paths_local.
 Paths.functions = fullfile(paths_local.project, 'scripts', 'functions');
 Paths.saveVar = fullfile(paths_local.project, 'saved matlab variables');
 Paths.setUpScripts = fullfile(paths_local.project, 'scripts', 'set up');
