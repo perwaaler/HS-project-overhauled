@@ -5,12 +5,15 @@
 % data storage location respectively.
 
 % add path to the yaml utilities so that local yml file can be read:
-addpath(genpath(fullfile('..', 'functions', 'yaml utilities'));
+addpath(genpath(fullfile('..', 'functions', 'yaml utilities')));
+% add path to the startup-functions folder:
+addpath(genpath('functions'));
 % load local project and data paths from yml file (ignored by git):
-paths_local = yaml.loadFile('local_paths.yml');
+yaml_file_name = find_local_path_YAMLfile("local path files");
+paths_local = yaml.loadFile(fullfile("local path files", yaml_file_name));
 
 % Paths.project = paths_local.
-Paths.functions = fullfile(paths_local.project, 'script', 'functions');
+Paths.functions = fullfile(paths_local.project, 'scripts', 'functions');
 Paths.saveVar = fullfile(paths_local.project, 'saved matlab variables');
 Paths.setUpScripts = fullfile(paths_local.project, 'scripts', 'set up');
 Paths.murmurAlgorithm = fullfile(paths_local.project, 'scripts', 'T7 murmur algorithm');
