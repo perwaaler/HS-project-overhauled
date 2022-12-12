@@ -1,12 +1,13 @@
 R = ["CVresults_murRegAllPos_jointSegNonRandomSegExtraction",...
     "CVresults_netMurRegAllPos_valStop_overTrain",...
     "CV"];
-
+load CVresults_murRegAllPos_jointSegNonRandomSegExtraction.mat
+load CVresults_netMurRegAllPos_valStop_SpringerSeg.mat
 % load CVresults_netMurRegAllPos_valStop_overTrain.mat
-load CVresults_noNoise_regAorticOnly_jointSegNonRandomSegExtraction.mat
+% load CVresults_noNoise_regAorticOnly_jointSegNonRandomSegExtraction.mat
 
 targetType = 'avmeanpg';
-classThr = 10;
+classThr = 15;
 [predPerf, S, All] = CV_VHDpred_performanceSummary(CVresults,...
                                                 targetType,...
                                                 classThr,...

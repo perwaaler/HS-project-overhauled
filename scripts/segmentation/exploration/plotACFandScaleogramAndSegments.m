@@ -45,7 +45,7 @@ end
 % alfa = .22;
 % beta = .11;
 % Segment audio using the confident neighborhood method:
-[states_ngbr,fitInfo] = ngbrSegment(id,[],[],HMMpar);
+[states_ngbr,fitInfo] = NeighborhoodSegmentationAlgorithm(id,[],[],HMMpar);
 confidence = fitInfo.c;
 
 close all

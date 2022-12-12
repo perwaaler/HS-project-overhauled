@@ -3,7 +3,7 @@
 % a binary or continuous training target.
 
 % Load data on CV-partitioning and segmentation:
-load nodes_Springer.mat
+load nodes_jointSeg_v2.mat
 load CVpartitions.mat
 nodes0 = nodes;
 
@@ -176,7 +176,7 @@ if trainNet
             dropoutLayer(.5)
             fullyConnectedLayer(30)
             reluLayer
-            fullyConnectedLayer(1)
+            fullyConnectedLayer(2)
             regressionLayer];
     end
     

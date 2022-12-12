@@ -97,7 +97,6 @@ ylabel('AUC (multivar-model)')
 xlabel('AS threshold (AVmeanPG)')
 title('AS-detection')
 
-
 %% experiment 1v2: Springer mod vs Springer OG -- murmurs
 targetType = 'murmur';
 
